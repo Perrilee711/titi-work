@@ -117,9 +117,7 @@ export default function TrackCard({ id, title, coverColor, duration, featured, a
 
         {/* Vinyl record icon - always visible */}
         <div className={`transition-all duration-500 ${
-          isCurrent || (group as any)?.matches?.(':hover')
-            ? 'scale-110 translate-x-2'
-            : 'scale-100'
+          isCurrent ? 'scale-110 translate-x-2' : 'scale-100'
         }`}>
           <VinylIcon isPlaying={isPlaying} isCurrent={isCurrent} />
         </div>
