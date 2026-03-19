@@ -27,7 +27,7 @@ const { title, description, image, canonical, type, lang = 'en', showPlayer = tr
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <SEO title={title} description={description} image={image} canonical={canonical} type={type} />
   </head>
-  <body class="text-white antialiased">
+  <body class="text-white antialiased" style="background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f1a 100%) !important; min-height: 100vh;">
     <!-- Ambient background glow -->
     <div class="ambient-glow" aria-hidden="true"></div>
     <AudioProvider client:load>
