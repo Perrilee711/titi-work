@@ -89,7 +89,7 @@ const allTracks = sortedTracks;
           title={track.data.title}
           coverColor={track.data.coverColor}
           duration={track.data.duration}
-          audioFile={`/music/${track.data.audioFile}`}
+          audioFile={track.data.audioFile}
           featured={true}
         />
       ))}
@@ -111,7 +111,7 @@ const allTracks = sortedTracks;
           title={track.data.title}
           coverColor={track.data.coverColor}
           duration={track.data.duration}
-          audioFile={`/music/${track.data.audioFile}`}
+          audioFile={track.data.audioFile}
           featured={false}
         />
       ))}
