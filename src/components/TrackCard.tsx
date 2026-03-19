@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, Pause, Clock, Disc } from 'lucide-react';
+import { Play, Clock } from 'lucide-react';
 
 interface TrackCardProps {
   id: string;
@@ -16,6 +16,37 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
+// Vinyl record component for TrackCard
+function VinylIcon({ isPlaying, isCurrent }: { isPlaying: boolean; isCurrent: boolean }) {
+  return (
+    <div
+      className={`relative ${isPlaying && isCurrent ? 'animate-spin' : ''}`}
+      style={{ animationDuration: isPlaying ? '2s' : '0s' }}
+    >
+      {/* Vinyl base */}
+      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gray-800 to-black" />
+      {/* Grooves */}
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: 'repeating-radial-gradient(circle at center, transparent 0px, transparent 2px, rgba(255,255,255,0.05) 3px, transparent 4px)',
+        }}
+      />
+      {/* Label */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full"
+        style={{
+          background: isCurrent
+            ? 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)'
+            : 'linear-gradient(135deg, #3b3b3b 0%, #1a1a1a 100%)',
+        }}
+      />
+      {/* Center hole */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-black" />
+    </div>
+  );
+}
+
 export default function TrackCard({ id, title, coverColor, duration, featured, audioFile }: TrackCardProps) {
   const [isCurrent, setIsCurrent] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -26,27 +57,10 @@ export default function TrackCard({ id, title, coverColor, duration, featured, a
       setIsCurrent(track.id === id);
     };
 
-    const handleTimeUpdate = () => {
-      // Poll for playing state
-      const howl = (window as any).Howl;
-      if (howl && isCurrent) {
-        // Check if playing
-      }
-    };
-
     window.addEventListener('play-track', handlePlayTrack);
-
-    // Check current track periodically
-    const interval = setInterval(() => {
-      const event = new CustomEvent('get-playing-state', { detail: { trackId: id, callback: (playing: boolean) => {
-        setIsPlaying(playing);
-      }}});
-      window.dispatchEvent(event);
-    }, 500);
 
     return () => {
       window.removeEventListener('play-track', handlePlayTrack);
-      clearInterval(interval);
     };
   }, [id]);
 
@@ -77,7 +91,7 @@ export default function TrackCard({ id, title, coverColor, duration, featured, a
     >
       {/* Active indicator glow */}
       {isCurrent && (
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 pointer-events-none z-10" />
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 pointer-events-none z-10 animate-pulse" />
       )}
 
       {/* Cover with gradient */}
@@ -89,26 +103,35 @@ export default function TrackCard({ id, title, coverColor, duration, featured, a
             : 'linear-gradient(135deg, #1a1a24 0%, #12121a 100%)'
         }}
       >
-        {/* Glow effect - enhanced */}
+        {/* Glow effect */}
         <div
           className={`absolute inset-0 transition-opacity duration-500 ${
             isCurrent ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
           }`}
           style={{
             background: isCurrent
-              ? 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.4), transparent 70%)'
-              : 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.2), transparent 70%)'
+              ? 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.5), transparent 70%)'
+              : 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.25), transparent 70%)'
           }}
         />
 
-        {/* Hover play button */}
+        {/* Vinyl record icon - always visible */}
+        <div className={`transition-all duration-500 ${
+          isCurrent || (group as any)?.matches?.(':hover')
+            ? 'scale-110 translate-x-2'
+            : 'scale-100'
+        }`}>
+          <VinylIcon isPlaying={isPlaying} isCurrent={isCurrent} />
+        </div>
+
+        {/* Play overlay on hover */}
         <div
           className={`absolute inset-0 transition-all duration-300 flex items-center justify-center ${
             isCurrent ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
           }`}
         >
           <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
-            {isPlaying ? (
+            {isPlaying && isCurrent ? (
               <div className="playing-bar">
                 <span></span><span></span><span></span><span></span>
               </div>
@@ -118,13 +141,7 @@ export default function TrackCard({ id, title, coverColor, duration, featured, a
           </div>
         </div>
 
-        {/* Music icon - spins when playing */}
-        <Disc className={`w-14 h-14 text-white/15 absolute transition-all duration-500 ${
-          isPlaying && isCurrent ? 'animate-spin opacity-50' : 'opacity-30'
-        }`}
-        style={{ animationDuration: isPlaying ? '3s' : '0s' }} />
-
-        {/* Playing indicator - always visible when playing */}
+        {/* Playing indicator */}
         {isCurrent && (
           <div className="absolute bottom-4 right-4 flex items-center gap-2">
             <div className="playing-bar">
