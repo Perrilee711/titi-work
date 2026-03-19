@@ -22,64 +22,64 @@ export default function TrackCard({ id, title, coverColor, duration, featured, i
     <button
       onClick={onPlay}
       aria-label={`Play ${title}`}
-      className={`group w-full text-left rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-purple-500/10 ${
-        isCurrent ? 'ring-2 ring-offset-2 ring-offset-black' : ''
+      className={`group w-full text-left rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl ${
+        isCurrent ? 'ring-2 ring-indigo-500/50' : ''
       } ${featured ? 'md:col-span-2 lg:col-span-1' : ''}`}
-      style={isCurrent ? { '--tw-ring-color': coverColor || '#d4789a' } as any : {}}
     >
-      {/* Cover */}
+      {/* Cover with gradient */}
       <div
         className="aspect-square relative flex items-center justify-center overflow-hidden"
         style={{
           background: coverColor
-            ? `linear-gradient(135deg, ${coverColor} 0%, ${adjustColor(coverColor, -30)} 100%)`
-            : 'linear-gradient(135deg, #1a1a1f 0%, #0f0f12 100%)'
+            ? `linear-gradient(135deg, ${coverColor} 0%, ${adjustColor(coverColor, -40)} 100%)`
+            : 'linear-gradient(135deg, #1e1e2e 0%, #16161f 100%)'
         }}
       >
-        {/* Animated background pattern */}
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent)]" />
-        </div>
+        {/* Glow effect */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+             style={{ background: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.3), transparent 70%)' }} />
 
-        {/* Hover overlay with play button */}
+        {/* Hover play button */}
         <div
           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center"
-          style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
         >
-          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl transform scale-90 group-hover:scale-100 transition-transform duration-300">
+          <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
             {isPlaying && isCurrent ? (
-              <Pause className="text-white fill-white" size={28} />
+              <div className="playing-bar">
+                <span></span><span></span><span></span><span></span>
+              </div>
             ) : (
               <Play className="text-white fill-white ml-1" size={28} />
             )}
           </div>
         </div>
 
-        {/* Center icon */}
-        <Disc className={`w-12 h-12 text-white/20 ${isPlaying && isCurrent ? 'animate-spin' : ''}`} style={{ animationDuration: isPlaying ? '4s' : '0s' }} />
+        {/* Music icon */}
+        <Disc className={`w-14 h-14 text-white/15 absolute ${isPlaying && isCurrent ? 'animate-spin' : ''}`}
+              style={{ animationDuration: isPlaying ? '3s' : '0s' }} />
 
         {/* Playing indicator */}
         {isPlaying && isCurrent && (
-          <div className="absolute bottom-3 right-3 flex gap-0.5">
-            <span className="w-1 h-3 bg-white rounded-full animate-pulse" style={{ animationDelay: '0ms' }} />
-            <span className="w-1 h-4 bg-white rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
-            <span className="w-1 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
+          <div className="absolute bottom-4 right-4">
+            <div className="playing-bar">
+              <span></span><span></span><span></span><span></span>
+            </div>
           </div>
         )}
       </div>
 
       {/* Info */}
-      <div className="p-4 bg-gradient-to-b from-[#1a1a1f] to-[#111]">
+      <div className="p-4" style={{ background: 'linear-gradient(180deg, #1a1a20 0%, #151518 100%)' }}>
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-white font-medium text-sm truncate">{title}</p>
-            <p className="text-white/40 text-xs mt-1 flex items-center gap-1">
+            <p className="text-gray-500 text-xs mt-1 flex items-center gap-1">
               <Clock size={10} />
               {formatTime(duration)}
             </p>
           </div>
           {featured && (
-            <span className="flex-shrink-0 text-[10px] uppercase tracking-widest text-white/40 border border-white/20 px-1.5 py-0.5 rounded">
+            <span className="flex-shrink-0 text-[10px] uppercase tracking-widest text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded-full">
               Featured
             </span>
           )}

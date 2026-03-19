@@ -43,7 +43,7 @@ export default function AudioPlayer() {
     <div
       className={`fixed z-50 transition-all duration-500 ${
         expanded ? 'bottom-0 left-0 right-0' : 'bottom-0 left-0 right-0 md:bottom-4 md:right-4 md:left-auto md:w-96'
-      } bg-gradient-to-b from-[#1a1a1f] to-[#0f0f12] backdrop-blur-xl border-t md:border md:rounded-2xl shadow-2xl border-white/10`}
+      } bg-gradient-to-b from-[#1e1e2e] to-[#16161f] backdrop-blur-xl border-t md:border md:rounded-2xl shadow-2xl border-indigo-500/20`}
       role="region"
       aria-label="Audio player"
     >
@@ -84,7 +84,7 @@ export default function AudioPlayer() {
           <button
             onClick={toggle}
             aria-label={isPlaying ? `Pause ${currentTrack.title}` : `Play ${currentTrack.title}`}
-            className="p-3.5 bg-gradient-to-r from-[#d4789a] to-[#9b8ac4] text-white rounded-full hover:shadow-lg hover:shadow-purple-500/25 transition-all hover:scale-105 active:scale-95"
+            className="p-3.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
           >
             {isPlaying ? <Pause size={18} className="fill-white" /> : <Play size={18} className="ml-0.5 fill-white" />}
           </button>
@@ -112,7 +112,7 @@ export default function AudioPlayer() {
             className="h-1.5 bg-white/10 rounded-full cursor-pointer group overflow-hidden"
           >
             <div
-              className="h-full bg-gradient-to-r from-[#d4789a] to-[#9b8ac4] rounded-full transition-all duration-300 relative"
+              className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-300 relative"
               style={{ width: `${progressPercent}%` }}
             >
               <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg" />
@@ -136,7 +136,7 @@ export default function AudioPlayer() {
               className="h-2 bg-white/10 rounded-full cursor-pointer group overflow-hidden"
             >
               <div
-                className="h-full bg-gradient-to-r from-[#d4789a] via-[#9b8ac4] to-[#8b9a6b] rounded-full transition-all duration-300 relative"
+                className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-300 relative"
                 style={{ width: `${progressPercent}%` }}
               >
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg scale-0 group-hover:scale-100" />
