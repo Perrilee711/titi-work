@@ -34,6 +34,13 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const [playlist, setPlaylist] = useState<Track[]>([]);
   const howlRef = useRef<any>(null);
 
+  // Emit state change events for TrackCard sync
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('audio-state-change', {
+      detail: { track: currentTrack, isPlaying }
+    }));
+  }, [currentTrack, isPlaying]);
+
   const play = (track: Track) => {
     if (howlRef.current) {
       howlRef.current.unload();
@@ -41,6 +48,14 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
     const Howl = (window as any).Howl;
     if (!Howl) return;
+
+    // Set playlist if not already in it
+    setPlaylist(prev => {
+      if (!prev.find(t => t.id === track.id)) {
+        return [...prev, track];
+      }
+      return prev;
+    });
 
     const sound = new Howl({
       src: [track.audioFile],
