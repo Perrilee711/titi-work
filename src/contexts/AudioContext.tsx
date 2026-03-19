@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useRef, useEffect, type ReactNode } from 'react';
 
 interface Track {
   id: string;
@@ -32,14 +32,30 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const [progress, setProgress] = useState(0);
   const [volume, setVolumeState] = useState(0.8);
   const [playlist, setPlaylist] = useState<Track[]>([]);
-  const [howlReady, setHowlReady] = useState(false);
-  const howlRef = useRef<any>(null);
-  const playlistRef = useRef<Track[]>([]);
 
-  // Keep playlist ref in sync
+  // Use refs to avoid stale closures
+  const howlRef = useRef<any>(null);
+  const isPlayingRef = useRef(false);
+  const playlistRef = useRef<Track[]>([]);
+  const currentTrackRef = useRef<Track | null>(null);
+  const volumeRef = useRef(0.8);
+
+  // Keep refs in sync
   useEffect(() => {
     playlistRef.current = playlist;
   }, [playlist]);
+
+  useEffect(() => {
+    currentTrackRef.current = currentTrack;
+  }, [currentTrack]);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
+  useEffect(() => {
+    volumeRef.current = volume;
+  }, [volume]);
 
   // Emit state change events for TrackCard sync
   useEffect(() => {
@@ -48,9 +64,18 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     }));
   }, [currentTrack, isPlaying]);
 
-  const play = useCallback((track: Track) => {
-    console.log('Playing track:', track);
+  const updateProgress = () => {
+    if (howlRef.current && isPlayingRef.current) {
+      const seek = howlRef.current.seek() || 0;
+      setProgress(seek);
+      requestAnimationFrame(updateProgress);
+    }
+  };
 
+  const play = (track: Track) => {
+    console.log('Playing:', track.audioFile);
+
+    // Stop existing playback
     if (howlRef.current) {
       howlRef.current.unload();
       howlRef.current = null;
@@ -58,11 +83,11 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
     const Howl = (window as any).Howl;
     if (!Howl) {
-      console.error('Howler not loaded yet');
+      console.error('Howler not loaded');
       return;
     }
 
-    // Ensure track is in playlist
+    // Add to playlist
     setPlaylist(prev => {
       if (!prev.find(t => t.id === track.id)) {
         return [...prev, track];
@@ -74,128 +99,123 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       const sound = new Howl({
         src: [track.audioFile],
         html5: true,
-        volume: volume,
+        volume: volumeRef.current,
         preload: true,
         onplay: () => {
-          console.log('Playback started');
+          console.log('Started playing');
           setIsPlaying(true);
+          isPlayingRef.current = true;
           requestAnimationFrame(updateProgress);
         },
         onpause: () => {
-          console.log('Playback paused');
+          console.log('Paused');
           setIsPlaying(false);
+          isPlayingRef.current = false;
         },
         onend: () => {
-          console.log('Playback ended');
+          console.log('Ended');
           const currentPlaylist = playlistRef.current;
           const idx = currentPlaylist.findIndex(t => t.id === track.id);
           if (idx < currentPlaylist.length - 1) {
             play(currentPlaylist[idx + 1]);
           } else {
             setIsPlaying(false);
+            isPlayingRef.current = false;
             setProgress(0);
           }
         },
-        onloaderror: (id: number, error: any) => {
-          console.error('Failed to load audio:', error);
+        onloaderror: (_id: number, error: any) => {
+          console.error('Load error:', error);
         },
-        onplayerror: (id: number, error: any) => {
-          console.error('Failed to play audio:', error);
+        onplayerror: (_id: number, error: any) => {
+          console.error('Play error:', error);
         },
       });
 
       howlRef.current = sound;
       setCurrentTrack(track);
-
-      // Start playing
+      currentTrackRef.current = track;
       sound.play();
     } catch (err) {
-      console.error('Error creating Howl:', err);
+      console.error('Error:', err);
     }
-  }, [volume]);
+  };
 
-  const updateProgress = useCallback(() => {
-    if (howlRef.current && isPlaying) {
-      const seek = howlRef.current.seek() || 0;
-      setProgress(seek);
-      requestAnimationFrame(updateProgress);
-    }
-  }, [isPlaying]);
-
-  const toggle = useCallback(() => {
-    if (!howlRef.current) {
-      console.log('No audio loaded');
-      return;
-    }
-    if (isPlaying) {
+  const toggle = () => {
+    if (!howlRef.current) return;
+    if (isPlayingRef.current) {
       howlRef.current.pause();
     } else {
       howlRef.current.play();
     }
-  }, [isPlaying]);
+  };
 
-  const next = useCallback(() => {
-    if (!currentTrack || playlist.length === 0) return;
-    const idx = playlist.findIndex(t => t.id === currentTrack.id);
-    if (idx < playlist.length - 1) {
-      play(playlist[idx + 1]);
+  const next = () => {
+    const track = currentTrackRef.current;
+    if (!track || playlistRef.current.length === 0) return;
+    const idx = playlistRef.current.findIndex(t => t.id === track.id);
+    if (idx < playlistRef.current.length - 1) {
+      play(playlistRef.current[idx + 1]);
     }
-  }, [currentTrack, playlist, play]);
+  };
 
-  const prev = useCallback(() => {
-    if (!currentTrack || playlist.length === 0) return;
+  const prev = () => {
+    const track = currentTrackRef.current;
+    if (!track || playlistRef.current.length === 0) return;
     if (progress > 3) {
       howlRef.current?.seek(0);
       setProgress(0);
     } else {
-      const idx = playlist.findIndex(t => t.id === currentTrack.id);
+      const idx = playlistRef.current.findIndex(t => t.id === track.id);
       if (idx > 0) {
-        play(playlist[idx - 1]);
+        play(playlistRef.current[idx - 1]);
       }
     }
-  }, [currentTrack, playlist, progress, play]);
+  };
 
-  const seek = useCallback((time: number) => {
+  const seek = (time: number) => {
     if (howlRef.current) {
       howlRef.current.seek(time);
       setProgress(time);
     }
-  }, []);
+  };
 
-  const setVolume = useCallback((v: number) => {
+  const setVolume = (v: number) => {
     setVolumeState(v);
+    volumeRef.current = v;
     if (howlRef.current) {
       howlRef.current.volume(v);
     }
-  }, []);
+  };
 
-  const addToPlaylist = useCallback((track: Track) => {
+  const addToPlaylist = (track: Track) => {
     setPlaylist(prev => {
       if (prev.find(t => t.id === track.id)) return prev;
       return [...prev, track];
     });
-  }, []);
+  };
 
-  const clearPlaylist = useCallback(() => {
+  const clearPlaylist = () => {
     setPlaylist([]);
-  }, []);
+  };
 
-  // Load Howler.js
+  // Load Howler.js and set up event listener
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js';
-    script.onload = () => {
-      console.log('Howler.js loaded successfully');
-      setHowlReady(true);
-    };
-    script.onerror = () => {
-      console.error('Failed to load Howler.js');
-    };
-    document.head.appendChild(script);
+    // Check if already loaded
+    if ((window as any).Howl) {
+      console.log('Howler already loaded');
+    } else {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js';
+      script.onload = () => console.log('Howler loaded');
+      script.onerror = () => console.error('Howler load failed');
+      document.head.appendChild(script);
+    }
 
+    // Listen for play-track events
     const handlePlayTrack = (e: Event) => {
-      const track = (e as CustomEvent<Track>).detail;
-      console.log('Received play-track event:', track);
+      const track = (e as CustomEvent<Detail>).detail;
+      console.log('Got play event:', track);
       play(track);
     };
 
@@ -207,7 +227,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         howlRef.current.unload();
       }
     };
-  }, [play]);
+  }, []);
 
   return (
     <AudioContext.Provider value={{
@@ -219,10 +239,17 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   );
 }
 
+interface Detail {
+  id: string;
+  title: string;
+  audioFile: string;
+  coverColor: string;
+  duration: number;
+}
+
 export function useAudio() {
   const ctx = useContext(AudioContext);
   if (!ctx) {
-    // SSR fallback — return noop
     return {
       currentTrack: null,
       isPlaying: false,
