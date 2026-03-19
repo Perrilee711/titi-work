@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 — Page Not Found" description="This page doesn't exist." showPlayer={false}>
+  <section class="min-h-screen flex flex-col items-center justify-center text-center px-6">
+    <p class="text-6xl mb-4">♪</p>
+    <h1 class="text-4xl font-bold mb-4">404</h1>
+    <p class="text-white/40 mb-8">This page went silent.</p>
+    <a href="/" class="px-6 py-3 bg-white text-black font-medium rounded-full hover:bg-white/90 transition-colors">
+      Go Home
+    </a>
+  </section>
+</BaseLayout>

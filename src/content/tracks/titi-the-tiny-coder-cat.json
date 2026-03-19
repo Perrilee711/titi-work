@@ -1,0 +1,10 @@
+{
+  "title": "Titi the Tiny Coder Cat",
+  "duration": 195,
+  "coverColor": "#8B6B4A",
+  "audioFile": "/music/Titi the Tiny Coder Cat.mp3",
+  "releaseDate": "2024-10-10",
+  "featured": false,
+  "tags": ["whimsical", "tech"],
+  "order": 11
+}

@@ -1,0 +1,10 @@
+{
+  "title": "La La Playground",
+  "duration": 203,
+  "coverColor": "#E8845C",
+  "audioFile": "/music/la-la-playground.mp3",
+  "releaseDate": "2024-05-12",
+  "featured": false,
+  "tags": ["playful", "upbeat"],
+  "order": 6
+}

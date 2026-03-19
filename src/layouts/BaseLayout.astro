@@ -1,0 +1,41 @@
+---
+import SEO from '../components/SEO.astro';
+import Navigation from '../components/Navigation';
+import AudioPlayer from '../components/AudioPlayer';
+import { AudioProvider } from '../contexts/AudioContext';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  canonical?: string;
+  type?: 'website' | 'article';
+  lang?: 'en' | 'zh';
+  showPlayer?: boolean;
+}
+
+const { title, description, image, canonical, type, lang = 'en', showPlayer = true } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <SEO title={title} description={description} image={image} canonical={canonical} type={type} />
+  </head>
+  <body class="bg-black text-white antialiased">
+    <!-- Ambient background glow -->
+    <div class="ambient-glow" aria-hidden="true"></div>
+    <AudioProvider client:load>
+      <Navigation lang={lang} client:load />
+      <main class="min-h-screen">
+        <slot />
+      </main>
+      {showPlayer && <AudioPlayer client:only="react" />}
+    </AudioProvider>
+  </body>
+</html>

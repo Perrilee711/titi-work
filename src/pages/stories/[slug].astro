@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const stories = await getCollection('stories');
+  return stories.map(story => ({
+    params: { slug: story.id },
+    props: { story },
+  }));
+}
+
+const { story } = Astro.props;
+const { Content } = await render(story);
+---
+
+<BaseLayout
+  title={story.data.title}
+  description={story.data.description || story.data.title}
+  type="article"
+  showPlayer={false}
+>
+  <article class="max-w-2xl mx-auto px-6 py-24">
+    <a href="/about" class="text-white/30 hover:text-white/60 text-sm mb-8 inline-flex items-center gap-2 transition-colors">
+      ← Back to About
+    </a>
+
+    <header class="mb-12">
+      <p class="text-white/30 text-sm mb-3">{story.data.date}</p>
+      <h1 class="text-3xl md:text-4xl font-bold">{story.data.title}</h1>
+    </header>
+
+    <div class="prose prose-invert prose-p:text-white/70 prose-headings:text-white prose-a:text-pink-400 prose-strong:text-white/90 leading-relaxed">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  .prose h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: rgba(255,255,255,0.9);
+  }
+  .prose p {
+    margin-bottom: 1.25rem;
+  }
+  .prose hr {
+    border-color: rgba(255,255,255,0.1);
+    margin: 2rem 0;
+  }
+  .prose em {
+    color: rgba(255,255,255,0.5);
+  }
+</style>

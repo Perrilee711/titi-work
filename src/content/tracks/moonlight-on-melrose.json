@@ -1,0 +1,10 @@
+{
+  "title": "Moonlight on Melrose",
+  "duration": 235,
+  "coverColor": "#4A6B8A",
+  "audioFile": "/music/moonlight-on-melrose.mp3",
+  "releaseDate": "2024-06-20",
+  "featured": false,
+  "tags": ["noir", "jazz"],
+  "order": 7
+}

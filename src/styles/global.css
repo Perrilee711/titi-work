@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/* Color variables */
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #141414;
+  --bg-card: #1a1a1a;
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --accent-pink: #d4789a;
+  --accent-pink-light: #e8a0b8;
+  --accent-purple: #9b8ac4;
+  --accent-green: #8b9a6b;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666666;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: linear-gradient(180deg, #0a0a0a 0%, #12121a 50%, #0a0a0f 100%);
+  background-attachment: fixed;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 88px;
+}
+
+/* Ambient background effects */
+.ambient-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ambient-glow::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 20%, rgba(212, 120, 154, 0.08) 0%, transparent 50%),
+              radial-gradient(circle at 70% 60%, rgba(155, 138, 196, 0.06) 0%, transparent 50%),
+              radial-gradient(circle at 40% 80%, rgba(139, 154, 107, 0.05) 0%, transparent 40%);
+  animation: ambientMove 20s ease-in-out infinite;
+}
+
+.ambient-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+}
+
+@keyframes ambientMove {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(2%, 2%) rotate(1deg); }
+  66% { transform: translate(-1%, 1%) rotate(-1deg); }
+}
+
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 100px;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
+/* Mobile typography */
+@media (max-width: 768px) {
+  .timeline-content {
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  .timeline-date {
+    font-size: 0.75rem;
+  }
+  .track-title {
+    font-size: 0.8rem;
+  }
+  .section-heading {
+    font-size: 1.25rem;
+  }
+}
+
+/* Glass morphism card */
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Playing animation */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 120, 154, 0.4); }
+  50% { box-shadow: 0 0 20px 5px rgba(212, 120, 154, 0.2); }
+}
+
+.playing-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Text gradient */
+.text-gradient {
+  background: linear-gradient(135deg, #fff 0%, #d4789a 50%, #9b8ac4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

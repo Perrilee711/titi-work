@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://titi.work/sitemap-index.xml

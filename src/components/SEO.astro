@@ -1,0 +1,46 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  canonical?: string;
+  type?: 'website' | 'article';
+}
+
+const { title, description, image, canonical, type = 'website' } = Astro.props;
+const siteName = 'titi.work';
+const fullTitle = title === siteName ? title : `${title} — ${siteName}`;
+const url = canonical || 'https://titi.work';
+const ogImage = image || 'https://titi.work/og-default.png';
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<meta name="keywords" content="music, cats, stories, vienna, london, indie, soundtrack, instrumental, folk, ambient, jazz" />
+<link rel="canonical" href={url} />
+
+<!-- Open Graph -->
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content={type} />
+<meta property="og:url" content={url} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:image" content={ogImage} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<!-- JSON-LD -->
+<script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": type === 'article' ? 'Article' : 'WebSite',
+  "name": fullTitle,
+  "description": description,
+  "url": url,
+})} />
+
+<!-- RSS autodiscovery -->
+<link rel="alternate" type="application/rss+xml" title="titi.work RSS" href="/rss.xml" />
