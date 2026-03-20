@@ -77,8 +77,11 @@ export default function TrackCard({ id, title, coverColor, duration, featured, a
   }, [id]);
 
   const handlePlay = () => {
+    console.log('TrackCard clicked:', id, title, audioFile);
     const track = { id, title, audioFile, coverColor, duration };
-    window.dispatchEvent(new CustomEvent('play-track', { detail: track }));
+    const event = new CustomEvent('play-track', { detail: track });
+    window.dispatchEvent(event);
+    console.log('Event dispatched');
   };
 
   return (
